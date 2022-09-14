@@ -129,7 +129,7 @@ const Component: React.FC<{ to: string; amount: string }> = (props) => {
     }
   };
   return (
-    <div>
+    <div className="kujira-usk-payment">
       <textarea value={signed} name="usk_tx" />
       <button onClick={submit}>Pay {props.amount} USK</button>
     </div>

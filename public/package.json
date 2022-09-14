@@ -18,6 +18,7 @@
     "@types/react": "^18.0.20",
     "@types/react-dom": "^18.0.6",
     "crypto": "^1.0.1",
+    "css-loader": "^6.7.1",
     "esbuild": "^0.15.7",
     "events": "^3.3.0",
     "kujira.js": "Team-Kujira/kujira.js.git#87dc336beab27d70f6108dfc5e2ec65732d84976",
