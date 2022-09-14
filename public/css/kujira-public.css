@@ -21,6 +21,7 @@
   color: #fff !important;
   font-size: 12px !important;
   margin: 0 0 12px !important;
+  text-align: center;
 }
 .kujira-usk-payment img {
   display: block;
@@ -28,6 +29,13 @@
   width: auto;
   float: none !important;
   margin: 8px 0 0 auto !important;
+}
+.kujira-usk-payment svg {
+  width: 24px;
+  height: auto;
+  display: block;
+  margin: 0 auto 6px;
+  color: #60fbd0;
 }
 .kujira-usk-payment button {
   font-family: 'Montserrat',sans-serif;
@@ -84,4 +92,37 @@
 }
 .kujira-usk-payment button:hover:not(:disabled) {
   background-position: 50% 0;
+}
+.kujira-usk-payment button.outline {
+  color: #46d0d9;
+  background: transparent;
+}
+.kujira-usk-payment button.outline:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1px;
+  border-radius: 0.25rem;
+  background: linear-gradient(
+    45deg,
+    #1e92e6,
+    #60fbd0 75%,
+    #1c6599 150%
+  );
+  background-size: 200% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  transition: all 0.25s;
+}
+.kujira-usk-payment button.outline:hover:not(:disabled) {
+  background-color: transparent;
+  color: #60fbd0;
+}
+.kujira-usk-payment button.outline:hover:not(:disabled):before {
+  background-position: 75% 0;
 }

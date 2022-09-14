@@ -236,7 +236,11 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 	public function order_received_text($text, $order)
 	{
 		if ($order && $this->id === $order->get_payment_method()) {
-			return esc_html__('Thank you for your payment. Your transaction has been completed, You can view the transaction at https://finder.kujira.app/kaiyo-1/tx/' . $order->get_meta('hash'), 'kujira');
+			$tx = 'https://finder.kujira.app/kaiyo-1/tx/' . $order->get_meta('hash');
+			ob_start(); ?>
+			Thank you for your payment. Your transaction has been completed, You can view the transaction at <a href="<?php echo $tx; ?>" target="_blank">here.</a>
+			<?php
+    	return ob_get_clean();
 		}
 
 		return $text;
