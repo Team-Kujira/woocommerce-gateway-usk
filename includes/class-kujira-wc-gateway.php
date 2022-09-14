@@ -197,6 +197,7 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 		$res = Kujira_Chain::broadcast($tx);
 
 		if ($res->success()) {
+			$order->add_meta_data('hash', $res->hash);
 			$order->add_order_note(__('USK payment received: https://finder.kujira.app/kaiyo-1/tx/' . $res->hash, 'woothemes'));
 			$order->payment_complete();
 			$woocommerce->cart->empty_cart();
@@ -244,7 +245,7 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 	public function order_received_text($text, $order)
 	{
 		if ($order && $this->id === $order->get_payment_method()) {
-			return esc_html__('Thank you for your payment. Your transaction has been completed, and a receipt for your purchase has been emailed to you. Log into your Kujira account to view transaction details.', 'kujira');
+			return esc_html__('Thank you for your payment. Your transaction has been completed, You can view the transaction at https://finder.kujira.app/kaiyo-1/tx/' . $order->get_meta('hash'), 'kujira');
 		}
 
 		return $text;
