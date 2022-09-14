@@ -103,7 +103,6 @@ const Component: React.FC<{ to: string; amount: string }> = (props) => {
       );
 
       const amountInt = Math.floor(amount * 10 ** 6);
-      const feeInt = Math.floor(amountInt * 0.01);
 
       const msg = tx.bank.msgSend({
         amount: coins(amountInt, DENOM),
@@ -111,15 +110,13 @@ const Component: React.FC<{ to: string; amount: string }> = (props) => {
         to_address: recipient,
       });
 
-      const gasInt = Math.max(Math.floor(feeInt / 0.0015), 100000);
       const txRaw = await client.sign(
         accounts[0].address,
         [msg],
         {
           // This is ignored by Keplr for now
-          amount: coins(feeInt, DENOM),
-
-          gas: gasInt.toString(),
+          amount: coins(0, DENOM),
+          gas: "100000",
         },
         ""
       );
