@@ -1,10 +1,4 @@
-import {
-  coins,
-  StdFee,
-  SigningStargateClient,
-  GasPrice,
-} from "@cosmjs/stargate";
-import { SigningCosmosClient, MsgSend } from "@cosmjs/launchpad";
+import { coins, SigningStargateClient, GasPrice } from "@cosmjs/stargate";
 import { Window as KeplrWindow } from "@keplr-wallet/types";
 import { Decimal } from "@cosmjs/math";
 import { registry, aminoTypes, tx } from "kujira.js";
@@ -12,12 +6,15 @@ import { useState } from "react";
 import { render } from "react-dom";
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface Window extends KeplrWindow {}
 }
 
 const DENOM =
   "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk";
+
+const encode = (bytes: Uint8Array): string =>
+  // @ts-expect-error intellisense doesn't like this for some reason
+  Buffer.from(bytes).toString("base64");
 
 const Component: React.FC<{ to: string; amount: string }> = (props) => {
   const amount = parseFloat(props.amount);
@@ -44,7 +41,6 @@ const Component: React.FC<{ to: string; amount: string }> = (props) => {
         DENOM
       );
 
-      // Initialize the gaia api with the offline signer that is injected by Keplr extension.
       const client = await SigningStargateClient.connectWithSigner(
         "https://rpc.harpoon.kujira.setten.io",
         offlineSigner,
@@ -74,11 +70,9 @@ const Component: React.FC<{ to: string; amount: string }> = (props) => {
         ""
       );
 
-      setAuth(Buffer.from(res.authInfoBytes).toString("base64"));
-      setBody(Buffer.from(res.bodyBytes).toString("base64"));
-      setSignature(Buffer.from(res.signatures[0]).toString("base64"));
-
-      console.log(JSON.stringify(res));
+      setAuth(encode(res.authInfoBytes));
+      setBody(encode(res.bodyBytes));
+      setSignature(encode(res.signatures[0]));
     }
   };
   return (
