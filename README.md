@@ -2,7 +2,7 @@
 
 Accept USK payments on your WooCommerce store. No registration required, just install the plugin and configure your Kujira address
 
-##  Installation
+## Installation
 
 1. Download the plugin ZIP file from https://github.com/Team-Kujira/woocommerce-gateway-usk/blob/master/woocommerce-gateway-usk.zip?raw=true
 2. Visit the Admin page of your WooCommerce Wordpress installation
