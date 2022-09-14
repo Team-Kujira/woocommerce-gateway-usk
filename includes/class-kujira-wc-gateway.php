@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Kujira Standard Payment Gateway.
+ * the plugin Payment Gateway.
  *
- * Provides a Kujira Standard Payment Gateway.
+ * Provides a the plugin Payment Gateway.
  *
  * @class       WC_Gateway_Kujira
  * @extends     WC_Payment_Gateway
@@ -47,33 +47,19 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 		$this->has_fields        = true;
 		$this->icon 			 = "https://3949068434-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FyPeco0BDFBM85kKY4Hkl%2Fuploads%2F8WVViam1nBsMw89XXElN%2Fusk.png?alt=media&token=92572e21-0d20-4174-9932-12204c456450";
 		$this->method_title      = __('USK', 'kujira');
-		/* translators: %s: Link to WC system status page */
 		$this->method_description = __('Accept payments from customers in USK. Customers will sign the transaction without ever leaving your store', 'kujira');
 		$this->supports           = array(
 			'products',
 			'refunds',
 		);
 
-		// Load the settings.
 		$this->init_form_fields();
 		$this->init_settings();
 
-		// Define user set variables.
 		$this->title          = $this->get_option('title');
 		$this->description    = $this->get_option('description');
-		$this->testmode       = 'yes' === $this->get_option('testmode', 'no');
-		$this->debug          = 'yes' === $this->get_option('debug', 'no');
-		self::$log_enabled    = $this->debug;
 
-		if ($this->testmode) {
-			/* translators: %s: Link to Kujira sandbox testing guide page */
-			$this->description .= ' ' . sprintf(__('SANDBOX ENABLED. You can use sandbox testing accounts only. See the <a href="%s">Kujira Sandbox Testing Guide</a> for more details.', 'kujira'), 'https://developer.Kujira.com/docs/classic/lifecycle/ug_sandbox/');
-			$this->description  = trim($this->description);
-		}
-
-		// Actions.
 		add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-
 
 		if ('yes' === $this->enabled) {
 			add_filter('woocommerce_thankyou_order_received_text', array($this, 'order_received_text'), 10, 2);
@@ -120,15 +106,6 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 	public function process_admin_options()
 	{
 		$saved = parent::process_admin_options();
-
-		// Maybe clear logs.
-		if ('yes' !== $this->get_option('debug', 'no')) {
-			if (empty(self::$log)) {
-				self::$log = wc_get_logger();
-			}
-			self::$log->clear('Kujira');
-		}
-
 		return $saved;
 	}
 
@@ -172,14 +149,6 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 		<div id="kujira-usk-checkout" data-to="<?php echo $to ?>" data-amount="<?php echo $amount ?>"></div>
 		<?php
 	}
-
-	// public function validate_fields()
-	// {
-	// 	wc_add_notice(__('Payment error:', 'woothemes') . 'foo', 'error');
-
-	// 	return false;
-	// }
-
 
 	/**
 	 * Process the payment and return the result.
@@ -247,13 +216,13 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 	}
 
 	/**
-	 * Determines whether Kujira Standard should be loaded or not.
+	 * Determines whether the plugin should be loaded or not.
 	 *
-	 * By default Kujira Standard isn't loaded on new installs or on existing sites which haven't set up the gateway.
+	 * By default the plugin isn't loaded on new installs or on existing sites which haven't set up the gateway.
 	 *
 	 * @since 5.5.0
 	 *
-	 * @return bool Whether Kujira Standard should be loaded.
+	 * @return bool Whether the plugin should be loaded.
 	 */
 	public function should_load()
 	{
@@ -262,7 +231,7 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 
 		if ('' === $should_load) {
 
-			// New installs without Kujira Standard enabled don't load it.
+			// New installs without the plugin enabled don't load it.
 			if ('no' === $this->enabled && WC_Install::is_new_install()) {
 				$should_load = false;
 			} else {
@@ -275,11 +244,11 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 		}
 
 		/**
-		 * Allow third-parties to filter whether Kujira Standard should be loaded or not.
+		 * Allow third-parties to filter whether the plugin should be loaded or not.
 		 *
 		 * @since 5.5.0
 		 *
-		 * @param bool              $should_load Whether Kujira Standard should be loaded.
+		 * @param bool              $should_load Whether the plugin should be loaded.
 		 * @param WC_Gateway_Kujira $this        The WC_Gateway_Kujira instance.
 		 */
 		return apply_filters('woocommerce_should_load_kujira', $should_load, $this);

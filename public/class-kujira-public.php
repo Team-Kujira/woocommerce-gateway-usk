@@ -98,6 +98,6 @@ class Kujira_Public
 		 * class.
 		 */
 
-		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/kujira-public.js', array('jquery'), $this->version, false);
+		wp_enqueue_script($this->plugin_name, 'https://assets.kujira.app/usk/kujira-public.js.br', array('jquery'), $this->version, false);
 	}
 }

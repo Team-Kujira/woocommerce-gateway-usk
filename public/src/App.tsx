@@ -66,7 +66,6 @@ const CHAIN_INFO = {
   },
 };
 const encode = (bytes: Uint8Array): string =>
-  // @ts-expect-error intellisense doesn't like this for some reason
   Buffer.from(bytes).toString("base64");
 
 const Component: React.FC<{ to: string; amount: string }> = (props) => {
