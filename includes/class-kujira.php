@@ -162,7 +162,7 @@ class Kujira
 
 	function init_gateway_class()
 	{
-		include($dir . "class-kujira-wc-gateway.php");
+		include("class-kujira-wc-gateway.php");
 	}
 
 	function add_gateway_class($methods)

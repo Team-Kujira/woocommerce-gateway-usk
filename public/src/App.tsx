@@ -29,7 +29,7 @@ const Component: React.FC<{ to: string; amount: string }> = (props) => {
     if (!window.keplr) {
       alert("Please install keplr extension");
     } else {
-      const chainId = "harpoon-4";
+      const chainId = "kaiyo-1";
       await window.keplr.enable(chainId);
       const offlineSigner = window.keplr.getOfflineSigner(chainId);
 
@@ -41,7 +41,7 @@ const Component: React.FC<{ to: string; amount: string }> = (props) => {
       );
 
       const client = await SigningStargateClient.connectWithSigner(
-        "https://rpc.harpoon.kujira.setten.io",
+        "https://rpc.kaiyo.kujira.setten.io",
         offlineSigner,
         {
           registry,

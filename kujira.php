@@ -71,7 +71,7 @@ register_deactivation_hook(__FILE__, 'deactivate_kujira');
  */
 require plugin_dir_path(__FILE__) . 'includes/class-kujira.php';
 require plugin_dir_path(__FILE__) . 'includes/class-kujira-chain.php';
-require plugin_dir_path(__FILE__) . 'includes/class-kujira-chain-tx.php';
+require plugin_dir_path(__FILE__) . 'includes/class-kujira-chain-tx-result.php';
 
 /**
  * Begins execution of the plugin.

@@ -20,31 +20,33 @@ class Kujira_Chain
      *
      * @since    1.0.0
      */
-    public static function broadcast(Kujira_Chain_Tx $tx)
+    public static function broadcast(string $tx)
     {
 
         $body = array(
             'jsonrpc'    => '2.0',
             'id'   => 'usk-pay',
             'method' => 'broadcast_tx_commit',
-            'params' => '{"tx": "' . $tx . '"}',
+            'params' => array('tx' => $tx),
         );
 
         $args = array(
-            'body'        => $body,
-            'timeout'     => '5',
+            'body'        => wp_json_encode($body),
+            'timeout'     => 60,
             'redirection' => '5',
             'httpversion' => '1.0',
             'blocking'    => true,
-            'headers'     => array(),
+            'headers'     => [
+                'Content-Type' => 'application/json',
+            ],
             'cookies'     => array(),
         );
 
-        $response = wp_remote_post('http://your-contact-form.com', $args);
+        $response = wp_remote_post('https://rpc.kaiyo.kujira.setten.io', $args);
 
 
         // curl --data-binary '{"jsonrpc":"2.0","id":"anything","method":"broadcast_tx_commit","params": {"tx": "AQIDBA=="}}' -H 'content-type:text/plain;' http://localhost:26657
 
-        return $tx;
+        return new Kujira_Chain_Tx_Result(json_decode($response["body"])->result);
     }
 }

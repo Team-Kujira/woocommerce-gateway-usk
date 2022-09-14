@@ -194,23 +194,22 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 		$data = $this->get_post_data();
 
 		$tx = $data["usk_tx"];
-		$tx = new Kujira_Chain_Tx($tx);
 		$res = Kujira_Chain::broadcast($tx);
-		var_dump($res);
 
-		return;
+		if ($res->success()) {
+			$order->add_order_note(__('USK payment received: https://finder.kujira.app/kaiyo-1/tx/' . $res->hash, 'woothemes'));
+			$order->payment_complete();
+			$woocommerce->cart->empty_cart();
 
-		$order->payment_complete();
-
-		// Remove cart
-		$woocommerce->cart->empty_cart();
-
-
-		// Return thankyou redirect
-		return array(
-			'result' => 'success',
-			'redirect' => $this->get_return_url($order)
-		);
+			// Return thankyou redirect
+			return array(
+				'result' => 'success',
+				'redirect' => $this->get_return_url($order)
+			);
+		} else {
+			wc_add_notice(__('Payment error:', 'woothemes') . ' ' . $res->error, 'error');
+			return;
+		}
 	}
 
 	/**
@@ -287,6 +286,6 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 		 * @param bool              $should_load Whether Kujira Standard should be loaded.
 		 * @param WC_Gateway_Kujira $this        The WC_Gateway_Kujira instance.
 		 */
-		return apply_filters('woocommerce_should_load_Kujira_standard', $should_load, $this);
+		return apply_filters('woocommerce_should_load_kujira', $should_load, $this);
 	}
 }
