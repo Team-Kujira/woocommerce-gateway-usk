@@ -73,9 +73,6 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 
 		// Actions.
 		add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-		add_action('woocommerce_order_status_processing', array($this, 'capture_payment'));
-		add_action('woocommerce_order_status_completed', array($this, 'capture_payment'));
-		add_action('admin_enqueue_scripts', array($this, 'admin_scripts'));
 
 
 		if ('yes' === $this->enabled) {
@@ -176,6 +173,12 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 <?php
 	}
 
+	// public function validate_fields()
+	// {
+	// 	wc_add_notice(__('Payment error:', 'woothemes') . 'foo', 'error');
+
+	// 	return false;
+	// }
 
 
 	/**
@@ -186,15 +189,28 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 	 */
 	public function process_payment($order_id)
 	{
-		// include_once dirname(__FILE__) . '/includes/class-wc-gateway-Kujira-request.php';
+		global $woocommerce;
+		$order = new WC_Order($order_id);
+		$data = $this->get_post_data();
 
-		// $order          = wc_get_order($order_id);
-		// $Kujira_request = new WC_Gateway_Kujira_Request($this);
+		$tx = $data["usk_tx"];
+		$tx = new Kujira_Chain_Tx($tx);
+		$res = Kujira_Chain::broadcast($tx);
+		var_dump($res);
 
-		// return array(
-		// 	'result'   => 'success',
-		// 	'redirect' => $Kujira_request->get_request_url($order, $this->testmode),
-		// );
+		return;
+
+		$order->payment_complete();
+
+		// Remove cart
+		$woocommerce->cart->empty_cart();
+
+
+		// Return thankyou redirect
+		return array(
+			'result' => 'success',
+			'redirect' => $this->get_return_url($order)
+		);
 	}
 
 	/**
@@ -216,100 +232,7 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 		return $order && $order->get_transaction_id() && $has_api_creds;
 	}
 
-	/**
-	 * Init the API class and set the username/password etc.
-	 */
-	protected function init_api()
-	{
-		// include_once dirname(__FILE__) . '/includes/class-wc-gateway-Kujira-api-handler.php';
 
-		// WC_Gateway_Kujira_API_Handler::$api_username  = $this->testmode ? $this->get_option('sandbox_api_username') : $this->get_option('api_username');
-		// WC_Gateway_Kujira_API_Handler::$api_password  = $this->testmode ? $this->get_option('sandbox_api_password') : $this->get_option('api_password');
-		// WC_Gateway_Kujira_API_Handler::$api_signature = $this->testmode ? $this->get_option('sandbox_api_signature') : $this->get_option('api_signature');
-		// WC_Gateway_Kujira_API_Handler::$sandbox       = $this->testmode;
-	}
-
-	/**
-	 * Process a refund if supported.
-	 *
-	 * @param  int    $order_id Order ID.
-	 * @param  float  $amount Refund amount.
-	 * @param  string $reason Refund reason.
-	 * @return bool|WP_Error
-	 */
-	public function process_refund($order_id, $amount = null, $reason = '')
-	{
-		// $order = wc_get_order($order_id);
-
-		// if (!$this->can_refund_order($order)) {
-		// 	return new WP_Error('error', __('Refund failed.', 'woocommerce'));
-		// }
-
-		// $this->init_api();
-
-		// $result = WC_Gateway_Kujira_API_Handler::refund_transaction($order, $amount, $reason);
-
-		// if (is_wp_error($result)) {
-		// 	$this->log('Refund Failed: ' . $result->get_error_message(), 'error');
-		// 	return new WP_Error('error', $result->get_error_message());
-		// }
-
-		// $this->log('Refund Result: ' . wc_print_r($result, true));
-
-		// switch (strtolower($result->ACK)) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		// 	case 'success':
-		// 	case 'successwithwarning':
-		// 		$order->add_order_note(
-		// 			/* translators: 1: Refund amount, 2: Refund ID */
-		// 			sprintf(__('Refunded %1$s - Refund ID: %2$s', 'woocommerce'), $result->GROSSREFUNDAMT, $result->REFUNDTRANSACTIONID) // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		// 		);
-		// 		return true;
-		// }
-
-		// return isset($result->L_LONGMESSAGE0) ? new WP_Error('error', $result->L_LONGMESSAGE0) : false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-	}
-
-	/**
-	 * Capture payment when the order is changed from on-hold to complete or processing
-	 *
-	 * @param  int $order_id Order ID.
-	 */
-	public function capture_payment($order_id)
-	{
-		// $order = wc_get_order($order_id);
-
-		// if ('Kujira' === $order->get_payment_method() && 'pending' === $order->get_meta('_Kujira_status', true) && $order->get_transaction_id()) {
-		// 	$this->init_api();
-		// 	$result = WC_Gateway_Kujira_API_Handler::do_capture($order);
-
-		// 	if (is_wp_error($result)) {
-		// 		$this->log('Capture Failed: ' . $result->get_error_message(), 'error');
-		// 		/* translators: %s: Kujira gateway error message */
-		// 		$order->add_order_note(sprintf(__('Payment could not be captured: %s', 'woocommerce'), $result->get_error_message()));
-		// 		return;
-		// 	}
-
-		// 	$this->log('Capture Result: ' . wc_print_r($result, true));
-
-		// 	// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		// 	if (!empty($result->PAYMENTSTATUS)) {
-		// 		switch ($result->PAYMENTSTATUS) {
-		// 			case 'Completed':
-		// 				/* translators: 1: Amount, 2: Authorization ID, 3: Transaction ID */
-		// 				$order->add_order_note(sprintf(__('Payment of %1$s was captured - Auth ID: %2$s, Transaction ID: %3$s', 'woocommerce'), $result->AMT, $result->AUTHORIZATIONID, $result->TRANSACTIONID));
-		// 				$order->update_meta_data('_Kujira_status', $result->PAYMENTSTATUS);
-		// 				$order->set_transaction_id($result->TRANSACTIONID);
-		// 				$order->save();
-		// 				break;
-		// 			default:
-		// 				/* translators: 1: Authorization ID, 2: Payment status */
-		// 				$order->add_order_note(sprintf(__('Payment could not be captured - Auth ID: %1$s, Status: %2$s', 'woocommerce'), $result->AUTHORIZATIONID, $result->PAYMENTSTATUS));
-		// 				break;
-		// 		}
-		// 	}
-		// 	// phpcs:enable
-		// }
-	}
 
 	/**
 	 * Custom Kujira order received text.

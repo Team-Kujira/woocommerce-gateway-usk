@@ -4,6 +4,7 @@ import { Decimal } from "@cosmjs/math";
 import { registry, aminoTypes, tx } from "kujira.js";
 import { useState } from "react";
 import { render } from "react-dom";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 declare global {
   interface Window extends KeplrWindow {}
@@ -19,9 +20,7 @@ const encode = (bytes: Uint8Array): string =>
 const Component: React.FC<{ to: string; amount: string }> = (props) => {
   const amount = parseFloat(props.amount);
   const recipient = props.to;
-  const [auth, setAuth] = useState("");
-  const [body, setBody] = useState("");
-  const [signature, setSignature] = useState("");
+  const [signed, setSigned] = useState("");
 
   const submit = async (e) => {
     console.log("foo");
@@ -60,7 +59,7 @@ const Component: React.FC<{ to: string; amount: string }> = (props) => {
         to_address: recipient,
       });
 
-      const res = await client.sign(
+      const txRaw = await client.sign(
         accounts[0].address,
         [msg],
         {
@@ -70,16 +69,14 @@ const Component: React.FC<{ to: string; amount: string }> = (props) => {
         ""
       );
 
-      setAuth(encode(res.authInfoBytes));
-      setBody(encode(res.bodyBytes));
-      setSignature(encode(res.signatures[0]));
+      const txBytes = TxRaw.encode(txRaw).finish();
+
+      setSigned(encode(txBytes));
     }
   };
   return (
     <div>
-      <input value={auth} type="text" name="usk_auth" />
-      <input value={body} type="text" name="usk_body" />
-      <input value={signature} type="text" name="usk_signature" />
+      <textarea value={signed} name="usk_tx" />
       <button onClick={submit}>Pay {props.amount} USK</button>
     </div>
   );
