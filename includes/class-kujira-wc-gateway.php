@@ -221,17 +221,8 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 	 */
 	public function can_refund_order($order)
 	{
-		$has_api_creds = false;
-
-		if ($this->testmode) {
-			$has_api_creds = $this->get_option('sandbox_api_username') && $this->get_option('sandbox_api_password') && $this->get_option('sandbox_api_signature');
-		} else {
-			$has_api_creds = $this->get_option('api_username') && $this->get_option('api_password') && $this->get_option('api_signature');
-		}
-
-		return $order && $order->get_transaction_id() && $has_api_creds;
+		return false;
 	}
-
 
 
 	/**
