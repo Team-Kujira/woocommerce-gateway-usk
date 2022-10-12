@@ -2636,6 +2636,8 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     rollup: ^2.79.0
+    rollup-plugin-brotli: ^3.1.0
+    rollup-plugin-gzip: ^3.0.1
     rollup-plugin-polyfill-node: ^0.10.2
     rollup-plugin-terser: ^7.0.2
     stream: ^0.0.2
@@ -2743,6 +2745,22 @@ __metadata:
     hash-base: ^3.0.0
     inherits: ^2.0.1
   checksum: 006accc40578ee2beae382757c4ce2908a826b27e2b079efdcd2959ee544ddf210b7b5d7d5e80467807604244e7388427330f5c6d4cd61e6edaddc5773ccc393
+  languageName: node
+  linkType: hard
+
+"rollup-plugin-brotli@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "rollup-plugin-brotli@npm:3.1.0"
+  checksum: 5ea743b42e5db66d145933996029b85ebc6c377bcccd13e45ec794aebca9b041c81d383b75da542d0e6f8161faf5aa413470d4041f3e9e0db5713ed554a10493
+  languageName: node
+  linkType: hard
+
+"rollup-plugin-gzip@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "rollup-plugin-gzip@npm:3.0.1"
+  peerDependencies:
+    rollup: ">=2.0.0"
+  checksum: df456cd1720be1ddf7a57c1d81be70f7bc7cbba7d9098f369ebcf0f31f21db1eb16ab9d5f19a59fe844129a972e244c5be300007de4f63274d5991ecf28c92a9
   languageName: node
   linkType: hard
 
