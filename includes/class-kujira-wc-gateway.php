@@ -136,6 +136,33 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 				'default' => __('kujira1234...', 'kujira'),
 				'desc_tip'      => true,
 			),
+			'is_discount_enabled' => array(
+				'title' => __('Enable/Disable discount', 'kujira'),
+				'type' => 'checkbox',
+				'label' => __('Enable pay with usk discount', 'kujira'),
+				'default' => 'no'
+			),
+			'discount_name' => array(
+				'title' => __('Discount name', 'kujira'),
+				'type' => 'text',
+				'description' => __('Enter the name of discount', 'kujira'),
+				'default' => __('pay with usk discount', 'kujira'),
+				'desc_tip'      => true,
+			),
+			'discount_value' => array(
+				'title' => __('Discount percentage', 'kujira'),
+				'type' => 'number',
+				'description' => __('Enter the percentage of discount', 'kujira'),
+				'default' => __('5', 'kujira'),
+				'desc_tip'      => true,
+			),
+			'discount_usage_limit' => array(
+				'title' => __('Discount usage limit per user (Leave blank for unlimited usage per user)', 'kujira'),
+				'type' => 'text',
+				'description' => __('Enter the usage limit of discount (Leave blank for unlimited usage per user)', 'kujira'),
+				'default' => __('1', 'kujira'),
+				'desc_tip'      => true,
+			),
 		);
 	}
 
@@ -253,4 +280,128 @@ class Kujira_WC_Gateway extends WC_Payment_Gateway
 		 */
 		return apply_filters('woocommerce_should_load_kujira', $should_load, $this);
 	}
+}
+
+
+/*Adding the coupon code according to the field inputs*/
+
+$call_kujira_gateway = WC()->payment_gateways->payment_gateways()['kujira'];
+$is_discount_enabled = $call_kujira_gateway->get_option('is_discount_enabled');
+$coupon_code = $call_kujira_gateway->get_option('discount_name');
+$coupon_usage_limit_filter = $call_kujira_gateway->get_option('discount_usage_limit');
+
+
+
+if($is_discount_enabled=='yes' && $coupon_usage_limit_filter != null){
+    
+    $pay_with_usk_coupon    =  get_posts([
+        'post_type'   => 'shop_coupon',
+        'title'       => $coupon_code,
+        'post_status' => 'publish',
+    ]);
+
+    if(count($pay_with_usk_coupon)==0){
+
+        $amount =  $call_kujira_gateway->get_option('discount_value');
+        $discount_type = 'percent'; 
+
+        $coupon = array(
+            'post_title'   => $coupon_code,
+            'post_content' => '',
+            'post_status'  => 'publish',
+            'post_type'	   => 'shop_coupon',
+            'post_author'  => get_current_user_id(),
+            'meta_input'   => array(
+                'discount_type' => $discount_type,
+                'coupon_amount' => $amount,
+                'usage_limit_per_user' => $coupon_usage_limit_filter
+            )
+        );
+        $pay_with_usk_discount_coupon_id = wp_insert_post( $coupon , true , false);	
+
+    }
+
+}
+else {
+
+
+    $pay_with_usk_coupon    =  get_posts([
+        'post_type'   => 'shop_coupon',
+        'title'       => $coupon_code,
+        'post_status' => 'publish',
+    ]);
+
+    if(count($pay_with_usk_coupon)==0){
+
+        $amount =  $call_kujira_gateway->get_option('discount_value');
+        $discount_type = 'percent'; 
+
+        $coupon = array(
+            'post_title'   => $coupon_code,
+            'post_content' => '',
+            'post_status'  => 'publish',
+            'post_type'	   => 'shop_coupon',
+            'post_author'  => get_current_user_id(),
+            'meta_input'   => array(
+                'discount_type' => $discount_type,
+                'coupon_amount' => $amount
+            )
+        );
+        $pay_with_usk_discount_coupon_id = wp_insert_post( $coupon , true , false);	
+
+    }
+	
+}
+
+
+if($is_discount_enabled=='no'){
+    $get_posts = get_posts(array(
+        'post_type' => array('shop_coupon'),
+        'posts_per_page' => -1,
+        's' => $coupon_code,
+    ));
+    
+    if ( !empty($get_posts) ) {
+        foreach( $get_posts as $post ) {
+            wp_delete_post($post->ID, true);
+        }
+    }
+}
+
+
+/*Adding the coupon code on checkout if kujira gateway is selected*/
+add_action( 'woocommerce_checkout_update_order_review', 'kujira_add_checkout_fee_for_gateway' );
+
+function kujira_add_checkout_fee_for_gateway() {
+
+		$chosen_gateway = WC()->session->get( 'chosen_payment_method' );
+		$call_kujira_gateway = WC()->payment_gateways->payment_gateways()['kujira'];
+		$is_discount_enabled = $call_kujira_gateway->get_option('is_discount_enabled');
+		$coupon_code = $call_kujira_gateway->get_option('discount_name');
+		
+		if( ( WC()->cart->has_discount( $coupon_code ) && $chosen_gateway == 'kujira' ) || $is_discount_enabled == 'no' ) {
+
+		}
+		else {
+			if ( $chosen_gateway == 'kujira' ) {
+				WC()->cart->apply_coupon( $coupon_code );
+			}
+			else {
+				WC()->cart->remove_coupon( $coupon_code );
+			}
+		}
+
+}
+
+add_action( 'woocommerce_after_checkout_form', 'kujira_refresh_checkout_on_payment_methods_change' );
+
+function kujira_refresh_checkout_on_payment_methods_change(){
+	wc_enqueue_js( "
+		$( 'form.checkout' ).on( 'change', 'input[name^=\'payment_method\']', function() {
+			$('body').trigger('update_checkout');
+			setTimeout(function(){
+				$('body').trigger('update_checkout');
+			}, 250);
+		});
+   ");
 }
