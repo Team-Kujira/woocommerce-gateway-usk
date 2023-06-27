@@ -1,10 +1,10 @@
-import { coins, SigningStargateClient, GasPrice } from "@cosmjs/stargate";
-import { Window as KeplrWindow } from "@keplr-wallet/types";
 import { Decimal } from "@cosmjs/math";
-import { registry, aminoTypes, tx } from "kujira.js";
+import { GasPrice, SigningStargateClient, coins } from "@cosmjs/stargate";
+import { Window as KeplrWindow } from "@keplr-wallet/types";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { aminoTypes, registry, tx } from "kujira.js";
 import { useState } from "react";
 import { render } from "react-dom";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import Logo from "./components/Logo";
 
 declare global {
@@ -17,8 +17,8 @@ const DENOM =
 const CHAIN_INFO = {
   chainId: "kaiyo-1",
   chainName: "Kujira",
-  rpc: "https://rpc.kaiyo.kujira.setten.io",
-  rest: "https://lcd.kaiyo.kujira.setten.io",
+  rpc: "https://rpc-kujira.mintthemoon.xyz",
+  rest: "https://lcd-kujira.mintthemoon.xyz",
   bip44: {
     coinType: 118,
   },
@@ -92,7 +92,7 @@ const Component: React.FC<{ to: string; amount: string }> = (props) => {
       );
 
       const client = await SigningStargateClient.connectWithSigner(
-        "https://rpc.kaiyo.kujira.setten.io",
+        "https://rpc-kujira.mintthemoon.xyz",
         offlineSigner,
         {
           registry,

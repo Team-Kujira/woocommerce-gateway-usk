@@ -42,7 +42,7 @@ class Kujira_Chain
             'cookies'     => array(),
         );
 
-        $response = wp_remote_post('https://rpc.kaiyo.kujira.setten.io', $args);
+        $response = wp_remote_post('https://rpc-kujira.mintthemoon.xyz', $args);
 
 
         // curl --data-binary '{"jsonrpc":"2.0","id":"anything","method":"broadcast_tx_commit","params": {"tx": "AQIDBA=="}}' -H 'content-type:text/plain;' http://localhost:26657
