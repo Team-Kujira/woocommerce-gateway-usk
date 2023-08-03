@@ -19,6 +19,14 @@ The plugin is now installed and activated. Finally we need to set up our account
 3. Ensure that "USK by Kujira" is set to Enabled, and press "Manage" on the right
 4. Paste your Kujira address in the "Account" field and press "Save"
 
+Now, to setup the discount option
+
+1. Check the "Enable/Disable discount" checkbox if you want to enable the discount option
+2. Type in the name of the coupon you want to add in the "Discount name" field
+3. Enter the percentage of discount you want to give in the "Discount percentage" field
+4. Enter the max usage limit you want to set for the coupon per user in the "Discount usage limit" field. (Leave blank for unlimited usage per user)
+5. Press "Save"
+
 You're now good to go!
 
 If you need support with any of these steps, please find us in our [Discord](https://t.co/YcPdsthIFN) or [Telegram](https://t.co/yrtWJ3nQ25) channels
